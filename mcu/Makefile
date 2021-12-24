@@ -1,1 +1,1 @@
-obj-y := mcu.o uart.o
+obj-y := mcu.o uart.o port.o
