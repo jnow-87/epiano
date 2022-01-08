@@ -14,6 +14,18 @@ endmenu
 #
 # {{{
 menu "Application"
+	config SECRET
+		qstring "Secret"
+		default "anna"
+
+	config SECRET_MELODY
+		qstring "Secret melody"
+		default "cdefgah"
+
+	config SECRET_MELODY_INTERVAL_MS
+		int "Secret melody interval [ms]"
+		default 500
+
 	config MOTOR_IMPULSE_MS
 		int "Interval to activate the motor [ms]"
 		default 30 

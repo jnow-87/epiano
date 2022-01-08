@@ -1,7 +1,7 @@
 bin-y := main.elf
 
 
-main-y := main.o task.o led.o mixer.o motor.o mcu/
+main-y := main.o task.o led.o mixer.o motor.o secret.o mcu/
 
 
 .PHONY: flash
