@@ -1,0 +1,227 @@
+#
+# MCU
+#
+# {{{
+menu "MCU"
+	config MCU_CLOCK_HZ
+		int "System clock [HZ]"
+		default 8000000
+endmenu
+# }}}
+
+#
+# application
+#
+# {{{
+menu "Application"
+	config SECRET
+		qstring "Secret"
+		default "anna"
+
+	config SECRET_MELODY
+		qstring "Secret melody"
+		default "cdefgah"
+
+	config SECRET_MELODY_INTERVAL_MS
+		int "Secret melody interval [ms]"
+		default 500
+
+	config MOTOR_IMPULSE_MS
+		int "Interval to activate the motor [ms]"
+		default 30 
+endmenu
+# }}}
+
+#
+# build system
+#
+# {{{
+menu "Build system"
+	# build type
+	choice
+		prompt "Build type"
+
+		config BUILD_DEBUG
+			bool "debug"
+
+		config BUILD_RELEASE
+			bool "release"
+	endchoice
+
+	menu "Hidden"
+		visible if 0
+
+		config BUILD_TYPE
+			string "Build type"
+			default "debug" if BUILD_DEBUG
+			default "release" if BUILD_RELEASE
+	endmenu
+
+	# programmer
+	menu "Programmer"
+		config FUSER
+			string "Fuser"
+			default "avrfuser"
+
+		config PROG
+			string "Programmer"
+			default "avrdude"
+
+		config DEBUGGER
+			string "Debugger"
+			default "avarice"
+
+		choice
+			prompt "Programmer type"
+
+			config DRAGON_JTAG
+				bool "AVR Dragon JTAG"
+
+			config DRAGON_ISP
+				bool "AVR Dragon ISP"
+
+			config STK500V2
+				bool "STK500v2"
+		endchoice
+
+		choice
+			prompt "Programmer port"
+
+			config PROG_PORT_USB
+				bool "usb"
+
+			config PROG_PORT_UART
+				bool "uart"
+		endchoice
+
+		config PROG_UART_DEV
+			string "Uart device"
+			default "/dev/ttyUSB0"
+			depends on PROG_PORT_UART
+
+		menu "Hidden"
+			visible if 0
+
+			config PROG_PORT
+				string "Programmer port"
+				default "usb" if PROG_PORT_USB
+				default PROG_UART_DEV if PROG_PORT_UART
+				default "unknown programmer port"
+
+			config PROG_DEBUG_ARGS
+				string "Programmer debug arguments"
+				default "--debugwire" if DRAGON_ISP || STK500V2
+				default "--dragon --jtag $(CONFIG_PROG_PORT) --jtag-bitrate $(shell echo '$(CONFIG_SYSTEM_CLOCK_HZ) / (4 * 1000)' | bc -q)kHz" if DRAGON_JTAG
+				default ""
+
+			config PROG_TYPE
+				string "Programmer"
+				default "dragon_jtag"	if DRAGON_JTAG
+				default "dragon_isp"	if DRAGON_ISP
+				default "stk500v2"		if STK500V2
+				default "unkown programmer"
+		endmenu
+	endmenu
+
+	# build tree
+	config BUILD_TREE
+		string "build tree"
+		default "build/$(CONFIG_BUILD_TYPE)"
+
+	# toolchain prefixes
+	menu "Hidden"
+		visible if 0
+
+		config CC
+			string CC
+			default "avr-gcc"
+
+		config CXX
+			string CXX
+			default "avr-g++"
+
+		config AS
+			string AS
+			default "avr-as"
+
+		config AR
+			string AR
+			default "avr-ar"
+
+		config LD
+			string LD
+			default "avr-ld"
+	endmenu
+
+	menu "Hidden"
+		visible if 0
+
+		config HOSTCC
+			string HOSTCC
+			default "gcc"
+
+		config HOSTCXX
+			string HOSTCXX
+			default "g++"
+
+		config HOSTAS
+			string HOSTAS
+			default "as"
+
+		config HOSTAR
+			string HOSTAR
+			default "ar"
+
+		config HOSTLD
+			string HOSTLD
+			default "ld"
+	endmenu
+
+	# toolchain flags
+	menu "Target flags"
+		config CFLAGS
+			string CFLAGS
+
+		config CXXFLAGS
+			string CXXFLAGS
+
+		config CPPFLAGS
+			string CPPFLAGS
+
+		config ASFLAGS
+			string ASFLAGS
+
+		config LDFLAGS
+			string LDFLAGS
+
+		config LDLIBS
+			string LDLIBS
+
+		config ARCHFLAGS
+			string ARCHFLAGS
+	endmenu
+
+	menu "Host flags"
+		config HOSTCFLAGS
+			string HOSTCFLAGS
+
+		config HOSTCXXFLAGS
+			string HOSTCXXFLAGS
+
+		config HOSTCPPFLAGS
+			string HOSTCPPFLAGS
+
+		config HOSTASFLAGS
+			string HOSTASFLAGS
+
+		config HOSTLDFLAGS
+			string HOSTLDFLAGS
+
+		config HOSTLDLIBS
+			string HOSTLDLIBS
+
+		config HOSTARCHFLAGS
+			string HOSTARCHFLAGS
+	endmenu
+endmenu
+# }}}
